@@ -25,11 +25,18 @@ const NSTimeInterval timeoutInterval = 0.15;
 @synthesize maxRows;
 @synthesize vipObject;
 @synthesize entityToFetch;
+@synthesize delegate = delegate_;
 
 - (void)awakeFromNib
 {
 	[tableView setDataSource:self];
 	entityToFetch = @"DocRecord";
+}
+
+- (void)dealloc
+{
+	self.delegate = nil;
+	[super dealloc];
 }
 
 - (void)fetch:(void (^)(NSArray *managedObjectIDs, BOOL fetchContainsVip))completionBlock
@@ -81,8 +88,8 @@ const NSTimeInterval timeoutInterval = 0.15;
 				
 				isSearching = NO;
 				
-				if ([delegate respondsToSelector:@selector(arrayControllerFinishedSearching:)])
-					[delegate arrayControllerFinishedSearching:self];
+				if ([self.delegate respondsToSelector:@selector(arrayControllerFinishedSearching:)])
+					[self.delegate arrayControllerFinishedSearching:self];
 				
 				completionBlock(objects, containsVIP);
 			});
@@ -112,7 +119,7 @@ const NSTimeInterval timeoutInterval = 0.15;
 					
 			//NSFetchRequests and NSComparator-based sort descriptors apparently don't go together, so we can't tell the fetch request to sort using this descriptor
 			//Besides, it's far better to be sorting 100 objects with our expensive comparator than 10000
-			objects = [objects smartSort:[delegate sideSearchQuery]];
+			objects = [objects smartSort:[self.delegate sideSearchQuery]];
 			//objects = [objects sortedArrayUsingDescriptors:copiedCurrentSortDescriptors];
 			
 			BOOL containsVIP = NO;
@@ -133,8 +140,8 @@ const NSTimeInterval timeoutInterval = 0.15;
 				
 				isSearching = NO;
 				
-				if ([delegate respondsToSelector:@selector(arrayControllerFinishedSearching:)])
-					[delegate arrayControllerFinishedSearching:self];
+				if ([self.delegate respondsToSelector:@selector(arrayControllerFinishedSearching:)])
+					[self.delegate arrayControllerFinishedSearching:self];
 				
 				completionBlock(objectIDs, containsVIP);
 			});
@@ -154,8 +161,8 @@ const NSTimeInterval timeoutInterval = 0.15;
 	if (startedSearchTimeInterval + timeoutInterval >= [NSDate timeIntervalSinceReferenceDate])
 		return;
 	
-	if ([delegate respondsToSelector:@selector(arrayControllerTimedOut:)])
-		[delegate arrayControllerTimedOut:self];
+	if ([self.delegate respondsToSelector:@selector(arrayControllerTimedOut:)])
+		[self.delegate arrayControllerTimedOut:self];
 }
 
 

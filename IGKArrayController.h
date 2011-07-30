@@ -32,7 +32,7 @@
 	NSString *sortColumn;
 	NSString *entityToFetch;
 	
-	IBOutlet id delegate;
+	IBOutlet id delegate_;
 	BOOL isSearching;
 	NSTimeInterval startedSearchTimeInterval;
 }
@@ -44,6 +44,7 @@
 @property (assign) NSArray *currentSortDescriptors;
 @property (assign) NSUInteger maxRows;
 @property (assign) NSString *entityToFetch;
+@property (retain) id delegate;
 
 //The VIP object, if set, will sit at the very top of the the predicate or anything else
 @property (assign) id vipObject;
